@@ -4,6 +4,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
 
+// Função para atualizar o sprite
 void actualizeSprite(float& frame) {
     frame += 0.4f;
     if (frame > 4) {
@@ -12,43 +13,48 @@ void actualizeSprite(float& frame) {
 }
 
 int main() {
-
+    // Inicialização Allegro
     al_init();
     al_init_font_addon();
     al_init_ttf_addon();
     al_init_image_addon();
     al_install_keyboard();
 
+    // Criando a janela
     ALLEGRO_DISPLAY* display = al_create_display(840, 650);
     al_set_window_position(display, 200, 200);
     al_set_window_title(display, "Take care with the cars!");
 
+    // Carregando fonte
     ALLEGRO_FONT* font = al_load_font("./font.ttf", 25, 0);
+
+    // Criando temporizador
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
 
-    ALLEGRO_BITMAP* sprite = al_load_bitmap("./s.character.png"); // personagem
-    ALLEGRO_BITMAP* background = al_load_bitmap("./s.background.png"); // fundo
-    ALLEGRO_BITMAP* car = al_load_bitmap("./s.cars.png"); // carro
+    // Carregando imagens
+    ALLEGRO_BITMAP* sprite = al_load_bitmap("./s.character.png");
+    ALLEGRO_BITMAP* background = al_load_bitmap("./s.background.png");
+    ALLEGRO_BITMAP* car = al_load_bitmap("./s.cars.png");
 
+    // Fila de eventos
     ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_start_timer(timer);
 
+    // Variáveis de estado
     float frame = 0.f;
     int pos_x = 30, pos_y = 250;
     int current_frame_y = 128;
-
     int pos_car1_y = 0, pos_car2_y = 0;
-
     bool move_up = false, move_down = false, move_left = false, move_right = false;
 
     while (true) {
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
 
-        if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             break;
         }
         else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -84,6 +90,7 @@ int main() {
             }
         }
 
+        // Atualizando a posição do personagem
         if (move_up && pos_y > -10) {
             pos_y -= 4;
             current_frame_y = 128 + 64;
@@ -105,18 +112,25 @@ int main() {
             actualizeSprite(frame);
         }
 
+        // Atualizando a posição dos carros
         pos_car1_y += 2;
         pos_car2_y += 5;
 
+        // Desenhando
         al_clear_to_color(al_map_rgb(255, 255, 255));
-        al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE:");
         al_draw_bitmap(background, 0, 0, 0);
         al_draw_bitmap_region(sprite, 64 * (int)frame, current_frame_y, 64, 64, pos_x, pos_y, 0);
         al_draw_bitmap_region(car, 0, 0, 120, 186, 160, pos_car1_y, 0);
         al_draw_bitmap_region(car, 210, 0, 88, 186, 305, pos_car2_y, 0);
+
+        // Desenhando a pontuação
+        al_draw_textf(font, al_map_rgb(0, 0, 0), 7, 7, 0, "SCORE: ");
+        al_draw_textf(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: ");
+
         al_flip_display();
     }
 
+    // Ao finalizar a aplicação
     al_destroy_bitmap(sprite);
     al_destroy_bitmap(car);
     al_destroy_bitmap(background);

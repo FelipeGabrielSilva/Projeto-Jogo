@@ -146,6 +146,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="objetos.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets" Condition="Exists('packages\AllegroDeps.1.14.0\build\native\AllegroDeps.targets')" />
