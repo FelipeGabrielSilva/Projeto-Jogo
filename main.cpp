@@ -4,15 +4,11 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
 
-void actualizeSprite(float &frame) {
+void actualizeSprite(float& frame) {
     frame += 0.4f;
     if (frame > 4) {
         frame -= 4;
     }
-}
-
-void andar(int velocidade) {
-    velocidade += 0.4f;
 }
 
 int main() {
@@ -46,31 +42,66 @@ int main() {
 
     int pos_car1_y = 0, pos_car2_y = 0;
 
+    bool move_up = false, move_down = false, move_left = false, move_right = false;
+
     while (true) {
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
 
-        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+        if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             break;
         }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT) {
-            current_frame_y = 128;
-            pos_x += 8;
-            actualizeSprite(frame);
+        else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+            switch (event.keyboard.keycode) {
+            case ALLEGRO_KEY_UP:
+                move_up = true;
+                break;
+            case ALLEGRO_KEY_DOWN:
+                move_down = true;
+                break;
+            case ALLEGRO_KEY_LEFT:
+                move_left = true;
+                break;
+            case ALLEGRO_KEY_RIGHT:
+                move_right = true;
+                break;
+            }
         }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_LEFT) {
-            current_frame_y = 128 - 64;
-            pos_x -= 8;
-            actualizeSprite(frame);
+        else if (event.type == ALLEGRO_EVENT_KEY_UP) {
+            switch (event.keyboard.keycode) {
+            case ALLEGRO_KEY_UP:
+                move_up = false;
+                break;
+            case ALLEGRO_KEY_DOWN:
+                move_down = false;
+                break;
+            case ALLEGRO_KEY_LEFT:
+                move_left = false;
+                break;
+            case ALLEGRO_KEY_RIGHT:
+                move_right = false;
+                break;
+            }
         }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_DOWN) {
-            current_frame_y = 128 - 128;
-            pos_y += 8;
-            actualizeSprite(frame);
-        }
-        else if (event.keyboard.keycode == ALLEGRO_KEY_UP) {
+
+        if (move_up && pos_y > -10) {
+            pos_y -= 4;
             current_frame_y = 128 + 64;
-            pos_y -= 8;
+            actualizeSprite(frame);
+        }
+        if (move_down && pos_y < 590) {
+            pos_y += 4;
+            current_frame_y = 128 - 128;
+            actualizeSprite(frame);
+        }
+        if (move_left && pos_x > -10) {
+            pos_x -= 4;
+            current_frame_y = 128 - 64;
+            actualizeSprite(frame);
+        }
+        if (move_right && pos_x < 790) {
+            pos_x += 4;
+            current_frame_y = 128;
             actualizeSprite(frame);
         }
 
@@ -78,14 +109,14 @@ int main() {
         pos_car2_y += 5;
 
         al_clear_to_color(al_map_rgb(255, 255, 255));
-        al_draw_text(font, al_map_rgb(255,255,255), 5, 5, 0, "SCORE:");
+        al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE:");
         al_draw_bitmap(background, 0, 0, 0);
         al_draw_bitmap_region(sprite, 64 * (int)frame, current_frame_y, 64, 64, pos_x, pos_y, 0);
         al_draw_bitmap_region(car, 0, 0, 120, 186, 160, pos_car1_y, 0);
         al_draw_bitmap_region(car, 210, 0, 88, 186, 305, pos_car2_y, 0);
         al_flip_display();
     }
-    
+
     al_destroy_bitmap(sprite);
     al_destroy_bitmap(car);
     al_destroy_bitmap(background);
