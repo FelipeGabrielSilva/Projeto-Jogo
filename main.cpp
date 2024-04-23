@@ -62,6 +62,8 @@ int main() {
 
     // Criando retângulos
     Rectangle rect1 = { pos_x * countSize, pos_y * countSize, 64, 64 };
+    Rectangle rect2 = { 195, pos_car1_y, 75, 175 };
+    Rectangle rect3 = { 315, pos_car2_y, 75, 175 };
 
 
     while (true) {
@@ -127,12 +129,14 @@ int main() {
         }
 
         // Atualizando a posição dos carros
-        pos_car1_y += 2;
-        pos_car2_y += 5;
+        pos_car1_y += 1;
+        pos_car2_y += 1;
 
         rect1.x = pos_x * countSize;
         rect1.y = pos_y * countSize;
 
+        rect2.y = pos_car1_y;
+        rect3.y = pos_car2_y;
 
         // Desenhando
         al_clear_to_color(al_map_rgb(255, 255, 255));
@@ -141,6 +145,9 @@ int main() {
         al_draw_rectangle(rect1.x, rect1.y, rect1.x + rect1.width, rect1.y + rect1.height, al_map_rgb(255, 255, 255), 2); // desenha o retângulo com uma borda de 2 pixels de espessura
         al_draw_bitmap_region(car, 0, 0, 120, 186, 160, pos_car1_y, 0);
         al_draw_bitmap_region(car, 210, 0, 88, 186, 305, pos_car2_y, 0);
+        al_draw_rectangle(rect2.x, rect2.y + 40, rect2.x + rect2.width, rect2.y + rect2.height, al_map_rgb(255, 0, 0), 2); // retângulo vermelho
+        al_draw_rectangle(rect3.x, rect3.y + 40, rect3.x + rect3.width, rect3.y + rect3.height, al_map_rgb(0, 0, 255), 2); // retângulo azul
+
 
         // Desenhando a pontuação
         al_draw_textf(font, al_map_rgb(0, 0, 0), 7, 7, 0, "SCORE: ");
