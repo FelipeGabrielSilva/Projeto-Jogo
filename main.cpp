@@ -2,7 +2,16 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
 #include <allegro5/keyboard.h>
+
+typedef struct {
+    int x, y;
+    int width, height;
+} Rectangle;
+
+int countCell = 76; // qtd elementos da matriz
+int countSize = 4; // tamanho do quadrado
 
 // Função para atualizar o sprite
 void actualizeSprite(float& frame) {
@@ -18,6 +27,7 @@ int main() {
     al_init_font_addon();
     al_init_ttf_addon();
     al_init_image_addon();
+    al_init_primitives_addon();
     al_install_keyboard();
 
     // Criando a janela
@@ -45,14 +55,18 @@ int main() {
 
     // Variáveis de estado
     float frame = 0.f;
-    int pos_x = 30, pos_y = 250;
+    int pos_x = 1, pos_y = countCell /2;
     int current_frame_y = 128;
     int pos_car1_y = 0, pos_car2_y = 0;
     bool move_up = false, move_down = false, move_left = false, move_right = false;
 
+    // Criando retângulos
+    Rectangle rect1 = { pos_x * countSize, pos_y * countSize, 64, 64 };
+
+
     while (true) {
         ALLEGRO_EVENT event;
-        al_wait_for_event(event_queue, &event);
+        al_wait_for_event_timed(event_queue, &event,0.2);
 
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             break;
@@ -91,23 +105,23 @@ int main() {
         }
 
         // Atualizando a posição do personagem
-        if (move_up && pos_y > -10) {
-            pos_y -= 4;
+        if (move_up && pos_y > -1) {
+            pos_y -= 1;
             current_frame_y = 128 + 64;
             actualizeSprite(frame);
         }
-        if (move_down && pos_y < 590) {
-            pos_y += 4;
+        if (move_down && pos_y < 148) {
+            pos_y += 1;
             current_frame_y = 128 - 128;
             actualizeSprite(frame);
         }
-        if (move_left && pos_x > -10) {
-            pos_x -= 4;
+        if (move_left && pos_x > -2) {
+            pos_x -= 1;
             current_frame_y = 128 - 64;
             actualizeSprite(frame);
         }
-        if (move_right && pos_x < 790) {
-            pos_x += 4;
+        if (move_right && pos_x < 196) {
+            pos_x += 1;
             current_frame_y = 128;
             actualizeSprite(frame);
         }
@@ -116,10 +130,15 @@ int main() {
         pos_car1_y += 2;
         pos_car2_y += 5;
 
+        rect1.x = pos_x * countSize;
+        rect1.y = pos_y * countSize;
+
+
         // Desenhando
         al_clear_to_color(al_map_rgb(255, 255, 255));
         al_draw_bitmap(background, 0, 0, 0);
-        al_draw_bitmap_region(sprite, 64 * (int)frame, current_frame_y, 64, 64, pos_x, pos_y, 0);
+        al_draw_bitmap_region(sprite, 64 * (int)frame, current_frame_y, 64, 64, pos_x * countSize, pos_y * countSize, 0);
+        al_draw_rectangle(rect1.x, rect1.y, rect1.x + rect1.width, rect1.y + rect1.height, al_map_rgb(255, 255, 255), 2); // desenha o retângulo com uma borda de 2 pixels de espessura
         al_draw_bitmap_region(car, 0, 0, 120, 186, 160, pos_car1_y, 0);
         al_draw_bitmap_region(car, 210, 0, 88, 186, 305, pos_car2_y, 0);
 
